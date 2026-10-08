@@ -1,23 +1,22 @@
-FROM node:20 AS build
+FROM node:20-slim AS build
 WORKDIR /app
 
 COPY package*.json ./
-RUN npm install
+RUN --mount=type=secret,id=build_secret,target=/run/secrets/build_secret \
+  test -s /run/secrets/build_secret && npm ci --omit=dev
 
-COPY . .
+COPY server.js db.js ./
 
-FROM node:20 AS runtime
+FROM node:20-slim AS runtime
 WORKDIR /app
 
-COPY --from=build /app/package*.json ./
-COPY --from=build /app/node_modules ./node_modules
-COPY --from=build /app .
+COPY --from=build --chown=node:node /app/package*.json ./
+COPY --from=build --chown=node:node /app/node_modules ./node_modules
+COPY --from=build --chown=node:node /app/server.js /app/db.js ./
 
-RUN groupadd --system app && useradd --system --gid app app
-RUN chown -R app:app /app
-USER app
+USER node
 
-ENTRYPOINT ["node", "server.js"]
+CMD ["node", "server.js"]
 
 EXPOSE 3000
 
