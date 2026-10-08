@@ -1,14 +1,12 @@
 services:
   db:
     image: postgres:16
-    container_name: demo-postgres
+    container_name: demo-db
     restart: unless-stopped
     environment:
       POSTGRES_USER: postgres
       POSTGRES_PASSWORD: postgres
       POSTGRES_DB: demo
-    ports:
-      - "5432:5432"
     volumes:
       - ./db/init.sql:/docker-entrypoint-initdb.d/init.sql:ro
       - pg_data:/var/lib/postgresql/data
@@ -19,7 +17,7 @@ services:
       retries: 5
       start_period: 10s
     networks:
-      - app-network
+      - demo_back
 
   api:
     build:
@@ -28,13 +26,13 @@ services:
     container_name: demo-api
     restart: unless-stopped
     environment:
-      PGHOST: db
+      PGHOST: demo-db
       PGPORT: 5432
       PGUSER: postgres
       PGPASSWORD: postgres
       PGDATABASE: demo
     ports:
-      - "3000:3000"
+      - "8080:3000"
     read_only: true
     cap_drop:
       - ALL
@@ -50,11 +48,16 @@ services:
       retries: 3
       start_period: 20s
     networks:
-      - app-network
+      - demo_back
+      - demo_front
 
 volumes:
   pg_data:
 
 networks:
-  app-network:
+  demo_front:
+    name: demo_front
+    driver: bridge
+  demo_back:
+    name: demo_back
     driver: bridge
