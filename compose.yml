@@ -4,9 +4,11 @@ services:
     container_name: demo-db
     restart: unless-stopped
     environment:
-      POSTGRES_USER: postgres
-      POSTGRES_PASSWORD: postgres
-      POSTGRES_DB: demo
+      POSTGRES_USER: ${POSTGRES_USER:?POSTGRES_USER must be set in .env}
+      POSTGRES_PASSWORD_FILE: /run/secrets/db_password
+      POSTGRES_DB: ${POSTGRES_DB:?POSTGRES_DB must be set in .env}
+    secrets:
+      - db_password
     volumes:
       - ./db/init.sql:/docker-entrypoint-initdb.d/init.sql:ro
       - pg_data:/var/lib/postgresql/data
@@ -26,11 +28,13 @@ services:
     container_name: demo-api
     restart: unless-stopped
     environment:
-      PGHOST: demo-db
-      PGPORT: 5432
-      PGUSER: postgres
-      PGPASSWORD: postgres
-      PGDATABASE: demo
+      PGHOST: ${PGHOST:?PGHOST must be set in .env}
+      PGPORT: ${PGPORT:?PGPORT must be set in .env}
+      PGUSER: ${PGUSER:?PGUSER must be set in .env}
+      PGPASSWORD_FILE: /run/secrets/db_password
+      PGDATABASE: ${PGDATABASE:?PGDATABASE must be set in .env}
+    secrets:
+      - db_password
     ports:
       - "8080:3000"
     read_only: true
@@ -53,6 +57,10 @@ services:
 
 volumes:
   pg_data:
+
+secrets:
+  db_password:
+    file: ./secrets/db_password.txt
 
 networks:
   demo_front:

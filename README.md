@@ -87,3 +87,30 @@ et c'est lui qui sera évalué, pas le starter.
   Sous Windows, backend **WSL 2** : travaille depuis un terminal **WSL**.
 - `git`, `curl`. Node est nécessaire **seulement** si tu régénères
   `package-lock.json` (`cd api && npm install`, déjà commité ici).
+
+## Lancer la stack Compose
+
+Copie le fichier d'exemple vers `.env`, puis crée le fichier local du secret :
+
+```powershell
+Copy-Item .env.example .env
+New-Item -ItemType Directory -Force secrets | Out-Null
+Set-Content -NoNewline secrets/db_password.txt 'postgres'
+docker compose up -d --build
+docker compose ps
+```
+
+L'API est disponible sur `http://localhost:8080`. Les routes utiles sont :
+
+```powershell
+curl.exe http://localhost:8080/health
+curl.exe http://localhost:8080/products
+```
+
+Les données PostgreSQL sont conservées dans le volume nommé `pg_data`.
+Un `docker compose down` supprime les conteneurs mais conserve ce volume ;
+un nouveau `docker compose up -d --build` retrouve donc les produits existants.
+Le fichier `.env` local contient les paramètres non sensibles et n'est pas
+versionné ; le mot de passe est monté comme secret Compose depuis
+`secrets/db_password.txt`, également ignoré par Git. Seul `.env.example` est
+commité.

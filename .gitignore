@@ -1,4 +1,5 @@
 node_modules/
 *.log
 .env
+secrets/*.txt
 .DS_Store
