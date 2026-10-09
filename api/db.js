@@ -1,8 +1,6 @@
 'use strict';
 
-// Connexion PostgreSQL. Aucune valeur en dur : tout vient de variables
-// d'environnement (bonne pratique 12-factor). En Compose, PGHOST = le nom
-// du service "db", resolu par le DNS interne de Docker.
+// Connexion PostgreSQL. Aucune valeur en dur : tout vient de variables d'environnement (bonne pratique 12-factor). En Compose, PGHOST = le nom du service "db", resolu par le DNS interne de Docker.
 
 const fs = require('fs');
 const { Pool } = require('pg');
