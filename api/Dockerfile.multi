@@ -10,12 +10,6 @@ COPY server.js db.js ./
 FROM node:20-slim AS runtime
 WORKDIR /app
 
-RUN apt-get update \
-  && apt-get upgrade -y \
-  && rm -rf /var/lib/apt/lists/* \
-  && rm -rf /usr/local/lib/node_modules/npm \
-  && rm -f /usr/local/bin/npm /usr/local/bin/npx /usr/local/bin/corepack
-
 COPY --from=build --chown=node:node /app/package*.json ./
 COPY --from=build --chown=node:node /app/node_modules ./node_modules
 COPY --from=build --chown=node:node /app/server.js /app/db.js ./
