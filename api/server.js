@@ -19,8 +19,7 @@ const VERSION = process.env.VERSION || 'dev';
 const app = express();
 app.use(express.json());
 
-// Un log JSON par requete sur stdout : "docker logs" ne voit que le PID 1
-// et uniquement ce qui sort sur stdout / stderr.
+// Un log JSON par requete sur stdout : "docker logs" ne voit que le PID 1 et uniquement ce qui sort sur stdout / stderr.
 app.use((req, res, next) => {
   const t0 = Date.now();
   res.on('finish', () => {
@@ -73,8 +72,7 @@ const server = app.listen(PORT, () => {
   console.log(JSON.stringify({ level: 'info', msg: 'demo-api started', port: PORT, version: VERSION }));
 });
 
-// PID 1 dans le conteneur : on gere SIGTERM pour un arret propre.
-// Sans ca, "docker stop" attend 10 s puis SIGKILL (code 137).
+// PID 1 dans le conteneur : on gere SIGTERM pour un arret propre. Sans ca, "docker stop" attend 10 s puis SIGKILL (code 137).
 function shutdown(sig) {
   console.log(JSON.stringify({ level: 'info', msg: 'shutting down', sig }));
   server.close(() => db.pool.end().then(() => process.exit(0)));
