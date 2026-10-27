@@ -19,7 +19,7 @@ services:
       retries: 5
       start_period: 10s
     networks:
-      - demo_back
+      - back
 
   api:
     build:
@@ -54,8 +54,8 @@ services:
       retries: 3
       start_period: 20s
     networks:
-      - demo_back
-      - demo_front
+      - back
+      - front
 
   notifier:
     build:
@@ -73,7 +73,7 @@ services:
       retries: 3
       start_period: 5s
     networks:
-      - demo_back
+      - back
 
 volumes:
   pg_data:
@@ -83,9 +83,9 @@ secrets:
     file: ./secrets/db_password.txt
 
 networks:
-  demo_front:
-    name: demo_front
+  front:
+    name: front
     driver: bridge
-  demo_back:
-    name: demo_back
+  back:
+    name: back
     driver: bridge
