@@ -125,8 +125,9 @@ smoke test**.
 
 Ce job est un déploiement de validation automatisé sur le runner GitHub : il
 prépare un secret de base de données éphémère, exécute `docker compose pull`
-puis `docker compose up -d`, et vérifie que l'API répond avant de terminer.
-Le runner étant temporaire, ce contrôle prouve que les images publiées
-démarrent ensemble ; il ne déploie pas sur un serveur persistant. Un push de
-tag réussi avec le job vert constitue la preuve d'exécution de cette
-validation.
+puis `docker compose up -d`, crée un produit par l'API et vérifie dans les
+logs du notifier qu'il a reçu l'événement `product.created`. La stack est
+ensuite arrêtée. Le runner étant temporaire, ce contrôle prouve que les images
+publiées démarrent et communiquent ensemble ; il ne déploie pas sur un serveur
+persistant. Un push de tag réussi avec le job vert constitue la preuve
+d'exécution de cette validation.

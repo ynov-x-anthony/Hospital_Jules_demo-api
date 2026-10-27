@@ -68,7 +68,7 @@ app.post('/products', async (req, res) => {
       const response = await fetch(`${NOTIFIER_URL}/notify`, {
         method: 'POST',
         headers: { 'content-type': 'application/json' },
-        body: JSON.stringify(product),
+        body: JSON.stringify({ event: 'product.created', payload: product }),
         signal: AbortSignal.timeout(1500),
       });
       if (!response.ok) throw new Error(`notifier returned ${response.status}`);

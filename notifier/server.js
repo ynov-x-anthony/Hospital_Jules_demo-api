@@ -9,10 +9,14 @@ app.use(express.json());
 app.get('/health', (req, res) => res.json({ status: 'UP' }));
 
 app.post('/notify', (req, res) => {
-  console.log(JSON.stringify({ level: 'info', event: 'notification.received', body: req.body }));
+  console.log(JSON.stringify({
+    level: 'info',
+    msg: 'notification received',
+    body: JSON.stringify(req.body),
+  }));
   res.status(202).json({ accepted: true });
 });
 
 app.listen(PORT, () => {
-  console.log(JSON.stringify({ level: 'info', msg: 'demo-notifier started', port: PORT }));
+  console.log(JSON.stringify({ level: 'info', msg: 'notifier started', port: PORT }));
 });
