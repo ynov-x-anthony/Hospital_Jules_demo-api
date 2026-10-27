@@ -61,12 +61,12 @@ jobs:
           context: ./${{ matrix.service }}
           file: ./${{ matrix.service }}/Dockerfile${{ matrix.service == 'api' && '.multi' || '' }}
           push: true
-          tags: ${{ env.REGISTRY }}/${{ github.repository }}/${{ matrix.service }}:${{ github.ref_name }}
+          tags: ${{ env.REGISTRY }}/ynov-x-anthony/hospital_jules_demo-api/${{ matrix.service }}:${{ github.ref_name }}
           secrets: |
             build_secret=ci-build-secret
 
   deploy:
-    name: Simulated deployment
+    name: Compose deployment smoke test
     needs: image
     if: startsWith(github.ref, 'refs/tags/v')
     runs-on: ubuntu-24.04

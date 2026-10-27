@@ -114,3 +114,19 @@ Le fichier `.env` local contient les paramètres non sensibles et n'est pas
 versionné ; le mot de passe est monté comme secret Compose depuis
 `secrets/db_password.txt`, également ignoré par Git. Seul `.env.example` est
 commité.
+
+## Publication et déploiement CI
+
+Le workflow GitHub Actions `.github/workflows/ci.yml` construit et scanne
+séparément les images `api` et `notifier`. Sur un push de tag `v*`, il publie
+les deux images dans GHCR avec le nom du tag Git (par exemple
+`api:v1.2.3` et `notifier:v1.2.3`), puis lance le job **Compose deployment
+smoke test**.
+
+Ce job est un déploiement de validation automatisé sur le runner GitHub : il
+prépare un secret de base de données éphémère, exécute `docker compose pull`
+puis `docker compose up -d`, et vérifie que l'API répond avant de terminer.
+Le runner étant temporaire, ce contrôle prouve que les images publiées
+démarrent ensemble ; il ne déploie pas sur un serveur persistant. Un push de
+tag réussi avec le job vert constitue la preuve d'exécution de cette
+validation.
