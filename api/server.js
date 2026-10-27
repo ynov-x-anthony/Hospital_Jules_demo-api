@@ -15,6 +15,7 @@ const db = require('./db');
 
 const PORT = Number(process.env.PORT || 3000);
 const VERSION = process.env.VERSION || 'dev';
+const NOTIFIER_URL = process.env.NOTIFIER_URL || 'http://notifier:3001';
 
 const app = express();
 app.use(express.json());
@@ -62,7 +63,19 @@ app.post('/products', async (req, res) => {
     return res.status(400).json({ error: 'name (string) et price_cents (entier >= 0) requis' });
   }
   try {
-    res.status(201).json(await db.addProduct(name, priceCents));
+    const product = await db.addProduct(name, priceCents);
+    try {
+      const response = await fetch(`${NOTIFIER_URL}/notify`, {
+        method: 'POST',
+        headers: { 'content-type': 'application/json' },
+        body: JSON.stringify(product),
+        signal: AbortSignal.timeout(1500),
+      });
+      if (!response.ok) throw new Error(`notifier returned ${response.status}`);
+    } catch (notifyError) {
+      console.error(JSON.stringify({ level: 'warn', msg: 'notification failed', error: notifyError.message }));
+    }
+    res.status(201).json(product);
   } catch (err) {
     res.status(503).json({ error: 'db_unavailable', detail: err.message });
   }
